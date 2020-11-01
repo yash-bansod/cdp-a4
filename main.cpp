@@ -48,17 +48,24 @@ int main(int argc, char *argv[])
                     {
                         if(j==0)
                         {
-                            opcode=token[0];
-                            if(opcode=='C')
+                            if(token!="R" && token!="W" && token!="C" && token!="A") {
+                                opcode='O';
+                                var=token;
+                            }
+                            else
+                                opcode=token[0];
+                            if(opcode=='C' || opcode=='A') {
+                                var="";
                                 break;
+                            }
                         }
                         else if(j==1)
                             var=token;
                         j++;
                     }
-                    if(opcode=='C')
-                        break;
                     tx.add_op(opcode, var);
+                    if(opcode=='C' || opcode=='A')
+                        break;
                 }
                 TX.push_back(tx);
             }
