@@ -5,6 +5,10 @@
 #include "LockMgr.h"
 using namespace std;
 
+void printHelper(string msg){
+    cout << msg << endl;
+}
+
 LockMgr::LockMgr(vector<string> varList){
     db_varNames = varList;
     for(string varName : varList){
@@ -13,7 +17,7 @@ LockMgr::LockMgr(vector<string> varList){
 }
 
 void LockMgr::testCompilation(){
-    cout << "Its Working\n";
+    cout << "Its Working";
     return;
 }
 
@@ -24,7 +28,7 @@ void LockMgr::printAllVars(){
     cout << endl;
 }
 
-void LockMgr::aquireReadLock(int txId, string varName){
+void LockMgr::acquireReadLock(int txId, string varName){
     mutex & mlk = db_map[varName].mux;
     set<int> & wait_read = db_map[varName].wait_reader;
     set<int> & active_read = db_map[varName].active_reader;
@@ -37,20 +41,20 @@ void LockMgr::aquireReadLock(int txId, string varName){
     
     while(wait_write.size() + active_write.size() > 0){
         wait_read.insert(txId);
-        printf("Wait_R-lock [%d,%s]\n", txId, varName);
+        printHelper("Wait_R-lock ["+ to_string(txId) +","+ varName +"]");
         ok_read.wait(ul);
         wait_read.erase(txId);
     }
 
     active_read.insert(txId);
-    printf("R-lock [%d,%s]\n", txId, varName);
+    printHelper("R-lock ["+to_string(txId)+","+varName+"]");
 
     ul.unlock();
     
     return;
 }
 
-void LockMgr::aquireWriteLock(int txId, string varName){
+void LockMgr::acquireWriteLock(int txId, string varName){
     mutex & mlk = db_map[varName].mux;
     set<int> & wait_read = db_map[varName].wait_reader;
     set<int> & active_read = db_map[varName].active_reader;
@@ -69,16 +73,16 @@ void LockMgr::aquireWriteLock(int txId, string varName){
 
     while(active_write.size() + active_read.size() > 0){
         wait_write.insert(txId);
-        printf("Wait_W-lock [%d,%s]\n", txId, varName);
+        printHelper("Wait_W-lock ["+to_string(txId)+","+varName+"]");
         ok_write.wait(ul);
         wait_write.erase(txId);
     }
 
     active_write.insert(txId);
     if(is_upgrade){
-        printf("upgrade [%d,%s]\n", txId, varName);
+        printHelper("upgrade ["+to_string(txId)+","+varName+"]");
     }else{
-        printf("W-lock [%d,%s]\n", txId, varName);
+        printHelper("W-lock ["+to_string(txId)+","+varName+"]");
     }
 
     ul.unlock();
@@ -96,11 +100,12 @@ void LockMgr::releaseAllLocks(int txId){
         
         if(active_read.count(txId)){
             releaseReadLock(txId, varName);
+            printHelper("unlock ["+to_string(txId)+","+varName+"]");
         }else if(active_write.count(txId)){
             releaseWriteLock(txId, varName);
+            printHelper("unlock ["+to_string(txId)+","+varName+"]");
         }
         
-        printf("unlock [%d,%s]\n", txId, varName);
         ul.unlock();
     }
     return;
@@ -121,7 +126,7 @@ void LockMgr::releaseLock(int txId, string varName){
     if(active_read.count(txId)) releaseReadLock(txId, varName);
     else if(active_write.count(txId)) releaseWriteLock(txId, varName);
     else {
-        printf("No lock found for thread %d on %s \n", txId, varName);
+        printHelper("No lock found for thread "+to_string(txId)+" on "+varName+" ");
     }
 
 

@@ -29,16 +29,16 @@ public:
     // write constructor (arr of string)
     LockMgr(vector<string> varList);
 
-    void aquireReadLock(int txId, string varName);
+    void acquireReadLock(int txId, string varName);
     void releaseReadLock(int txId, string varName);
 
-    void aquireWriteLock(int txId, string varName);
+    void acquireWriteLock(int txId, string varName);
     void releaseWriteLock(int txId, string varName);
 
     void releaseLock(int txId, string varName);
     void releaseAllLocks(int txId);
 
-    // upgrade to write was handled in aquire write itself
+    // upgrade to write was handled in acquire write itself
     // void upgradeToWrite(int txId, string varName);
 
     void testCompilation();
