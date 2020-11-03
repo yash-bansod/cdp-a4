@@ -12,6 +12,7 @@ class Transaction
         void show_tx();
         std::vector<std::pair <char, std::string> > get_ops();
         int get_txid();
+        void set_res();
 };
 
 #endif

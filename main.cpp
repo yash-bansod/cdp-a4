@@ -1,15 +1,85 @@
 #include<bits/stdc++.h>
 #include "Transaction.h"
+#include "LockMgr.h"
 using namespace std;
 
 map<string,int> sym_table;      //symbol table: variable name , value
 
 void* initiate_tid(void* args)
 {
+    vector<string> db_vars;
+    for(auto itr=sym_table.begin();itr!=sym_table.end();++itr)
+    {
+        db_vars.push_back(itr->first);
+    }
+    LockMgr lock(db_vars);
     Transaction *tx = (Transaction*)args;
-    int ret=tx->get_txid();
-    cout<<ret<<endl;
-    pthread_exit(&ret);
+    int tx_id=tx->get_txid();
+    //cout<<ret<<endl;
+    vector< pair<char, string> > ops=tx->get_ops();
+    for(auto it=ops.begin();it!=ops.end();++it)
+    {
+        switch(it->first)
+        {
+            case 'R':
+            {
+                lock.aquireReadLock(tx_id, it->second);
+                break;
+            }
+            case 'W':
+            {
+                lock.aquireWriteLock(tx_id, it->second);
+                break;
+            }
+            case 'O':
+            {
+                string var_op=it->second;
+                int ispos=1;
+                int eqpos=var_op.find("=");
+                string var1=var_op.substr(0,eqpos);
+                int oppos=var_op.substr(eqpos+1).find("+");
+                if(oppos!=string::npos)
+                {
+                    oppos=var_op.substr(eqpos+1).find("-");
+                    ispos=0;
+                }
+                string var2=var_op.substr(eqpos+1,oppos-eqpos-1); //ab=ab+1 eqpos=2 oppos=5
+                string var3=var_op.substr(oppos+1);
+                auto itr1=sym_table.find(var1);
+                auto itr2=sym_table.find(var2);
+                auto itr3=sym_table.find(var3);
+                if(itr3==sym_table.end())
+                {
+                    if(ispos==1)
+                        itr1->second=itr2->second + stoi(var3);
+                    else
+                        itr1->second=itr2->second - stoi(var3);
+                }
+                else
+                {
+                    if(ispos==1)
+                        itr1->second=itr2->second + itr3->second;
+                    else
+                        itr1->second=itr2->second - itr3->second;
+                }
+                break;
+            }
+            case 'C':
+            {
+                tx->set_res();
+                lock.releaseAllLocks(tx_id);
+                break;
+            }
+            case 'A':
+            {
+                lock.releaseAllLocks(tx_id);
+                break;
+            }
+            default:
+            break;
+        }
+    }
+    pthread_exit(&tx_id);
 }
 
 void begin_transactions(vector<Transaction>* TX)

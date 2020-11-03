@@ -1,4 +1,4 @@
-SRCS=main.cpp Transaction.cpp
+SRCS=main.cpp Transaction.cpp LockMgr.cpp
 EXECUTABLES=main.out
 
 CC=g++
