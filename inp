@@ -1,11 +1,13 @@
 2
-a 10 b 20
+u 10 v 10
 1
-R a
-a=a+10
-W b
+R u
+R v
+u=u+v
+W u
 C
 2
-W a
-R b
-A
+R v
+u=v+50
+W v
+C

@@ -23,12 +23,12 @@ void* initiate_tid(void* args)
         {
             case 'R':
             {
-                lock.aquireReadLock(tx_id, it->second);
+                lock.acquireReadLock(tx_id, it->second);
                 break;
             }
             case 'W':
             {
-                lock.aquireWriteLock(tx_id, it->second);
+                lock.acquireWriteLock(tx_id, it->second);
                 break;
             }
             case 'O':
@@ -37,14 +37,15 @@ void* initiate_tid(void* args)
                 int ispos=1;
                 int eqpos=var_op.find("=");
                 string var1=var_op.substr(0,eqpos);
-                int oppos=var_op.substr(eqpos+1).find("+");
-                if(oppos!=string::npos)
+                string nvar=var_op.substr(eqpos+1);
+                int oppos=nvar.find("+");
+                if(oppos==string::npos)
                 {
-                    oppos=var_op.substr(eqpos+1).find("-");
+                    oppos=nvar.find("-");
                     ispos=0;
                 }
-                string var2=var_op.substr(eqpos+1,oppos-eqpos-1); //ab=ab+1 eqpos=2 oppos=5
-                string var3=var_op.substr(oppos+1);
+                string var2=nvar.substr(0,oppos); //ab=ab+1 eqpos=2 oppos=5
+                string var3=nvar.substr(oppos+1);
                 auto itr1=sym_table.find(var1);
                 auto itr2=sym_table.find(var2);
                 auto itr3=sym_table.find(var3);
@@ -171,7 +172,10 @@ int main(int argc, char *argv[])
     }
     f_inp.close();
     begin_transactions(&TX);
-
+    for(auto it=sym_table.begin();it!=sym_table.end();++it)
+    {
+        cout<<it->first<<" "<<it->second<<"\t";
+    }
     return 0;
 }
 
