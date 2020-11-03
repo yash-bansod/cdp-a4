@@ -2,6 +2,40 @@
 #include "Transaction.h"
 using namespace std;
 
+struct arg_struct {
+    Transaction* tx;
+    map<string,int>* sym_table;
+};
+
+void* initiate_tid(void* arguments)
+{
+    pthread_detach(pthread_self());
+    struct arg_struct *args = (struct arg_struct *)arguments;
+    cout<<args->tx->get_txid()<<endl<<flush;
+    pthread_exit(NULL);
+}
+
+void begin_transactions(vector<Transaction>* TX, map<string,int>* sym_table)
+{
+    struct arg_struct args;
+    args.sym_table=sym_table;
+    //for(auto it=(*TX).begin();it!=(*TX).end();++it)
+    //{
+    //    //it->show_tx();
+        args.tx=&(*(*TX).begin());
+        //args.tx->show_tx();
+    //    //cout<<"k"<<args.tx->get_txid()<<endl;
+        pthread_t ptid;
+    //    pthread_create(&ptid, NULL, &initiate_tid, (void*)&args);
+
+    //}
+        pthread_create(&ptid, NULL, &initiate_tid, (void*)&args);
+
+
+    
+}
+
+
 int main(int argc, char *argv[])
 {
     ifstream f_inp;     //input file
@@ -73,11 +107,7 @@ int main(int argc, char *argv[])
         i++;
     }
     f_inp.close();
-    //Test
-    for(auto it=TX.begin();it!=TX.end();++it)
-    {
-        it->show_tx();
-    }
+    begin_transactions(&TX, &sym_table);
 
     return 0;
 }

@@ -2,7 +2,7 @@ SRCS=main.cpp Transaction.cpp
 EXECUTABLES=main.out
 
 CC=g++
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -lpthread
 LDFLAGS=
 
 OBJS=$(SRCS:.cpp=.o)

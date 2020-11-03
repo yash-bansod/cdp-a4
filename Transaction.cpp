@@ -29,3 +29,12 @@ void Transaction::show_tx()
     }
 }
 
+vector< pair<char, string> > Transaction::get_ops()
+{
+    return this->ops;
+}
+
+int Transaction::get_txid()
+{
+    return this->tx_id;
+}
