@@ -1,0 +1,23 @@
+5
+a 10 b 20 c 5 d 25 e 30
+1
+R a
+W a
+a=a+5
+C
+2
+R b
+W b
+b=b+10
+C
+3
+R c
+W c
+c=c+10
+A
+4
+R d
+C
+5
+R e
+C

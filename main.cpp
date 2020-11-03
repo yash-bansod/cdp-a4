@@ -1,4 +1,5 @@
 #include<bits/stdc++.h>
+#include<unistd.h>
 #include "Transaction.h"
 #include "LockMgr.h"
 using namespace std;
@@ -7,6 +8,7 @@ map<string,int> sym_table;      //symbol table: variable name , value
 
 void* initiate_tid(void* args)
 {
+    map<string,int> t_sym;
     vector<string> db_vars;
     for(auto itr=sym_table.begin();itr!=sym_table.end();++itr)
     {
@@ -46,7 +48,13 @@ void* initiate_tid(void* args)
                 }
                 string var2=nvar.substr(0,oppos); //ab=ab+1 eqpos=2 oppos=5
                 string var3=nvar.substr(oppos+1);
-                auto itr1=sym_table.find(var1);
+                
+                auto itr1=t_sym.find(var1);
+                if(itr1==t_sym.end())
+                {
+                    t_sym.insert({sym_table.find(var1)->first, sym_table.find(var1)->second});
+                    itr1=t_sym.find(var1);
+                }
                 auto itr2=sym_table.find(var2);
                 auto itr3=sym_table.find(var3);
                 if(itr3==sym_table.end())
@@ -68,6 +76,11 @@ void* initiate_tid(void* args)
             case 'C':
             {
                 tx->set_res();
+                for(auto itr=t_sym.begin();itr!=t_sym.end();++itr)
+                {
+                    auto found=sym_table.find(itr->first);
+                    found->second=itr->second;
+                }
                 lock.releaseAllLocks(tx_id);
                 break;
             }

@@ -1,0 +1,9 @@
+W-lock [1,x]
+W-lock [1,y]
+W-lock [2,y]
+unlock [1,x]W-lock [2,x]
+
+unlock [2,x]
+unlock [1,y]
+unlock [2,y]
+x 10	y 5	
