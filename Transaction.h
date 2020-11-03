@@ -10,6 +10,9 @@ class Transaction
         Transaction(int id);
         void add_op(char opcode, std::string var);
         void show_tx();
+        std::vector<std::pair <char, std::string> > get_ops();
+        int get_txid();
+        void set_res();
 };
 
 #endif

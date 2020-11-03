@@ -9,6 +9,7 @@ using namespace std;
 Transaction::Transaction(int id)
 {
     this->tx_id = id;
+    this->res = 0;
 }
 
 void Transaction::add_op(char opcode, string var)
@@ -29,3 +30,17 @@ void Transaction::show_tx()
     }
 }
 
+vector< pair<char, string> > Transaction::get_ops()
+{
+    return this->ops;
+}
+
+int Transaction::get_txid()
+{
+    return this->tx_id;
+}
+
+void Transaction::set_res()
+{
+    this->res = 1;
+}
