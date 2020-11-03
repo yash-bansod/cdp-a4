@@ -2,48 +2,41 @@
 #include "Transaction.h"
 using namespace std;
 
-struct arg_struct {
-    Transaction* tx;
-    map<string,int>* sym_table;
-};
+map<string,int> sym_table;      //symbol table: variable name , value
 
-void* initiate_tid(void* arguments)
+void* initiate_tid(void* args)
 {
-    pthread_detach(pthread_self());
-    struct arg_struct *args = (struct arg_struct *)arguments;
-    cout<<args->tx->get_txid()<<endl<<flush;
-    pthread_exit(NULL);
+    Transaction *tx = (Transaction*)args;
+    int ret=tx->get_txid();
+    cout<<ret<<endl;
+    pthread_exit(&ret);
 }
 
-void begin_transactions(vector<Transaction>* TX, map<string,int>* sym_table)
+void begin_transactions(vector<Transaction>* TX)
 {
-    struct arg_struct args;
-    args.sym_table=sym_table;
-    //for(auto it=(*TX).begin();it!=(*TX).end();++it)
-    //{
-    //    //it->show_tx();
-        args.tx=&(*(*TX).begin());
-        //args.tx->show_tx();
-    //    //cout<<"k"<<args.tx->get_txid()<<endl;
-        pthread_t ptid;
-    //    pthread_create(&ptid, NULL, &initiate_tid, (void*)&args);
-
-    //}
-        pthread_create(&ptid, NULL, &initiate_tid, (void*)&args);
-
-
-    
+    int n=(*TX).size(); 
+    pthread_t ptid[n];
+    void *status;
+    int i=0;
+    for(auto it=(*TX).begin();it!=(*TX).end();++it)
+    {
+        pthread_create(&ptid[i], NULL, &initiate_tid, (void*)&(*it));
+        i++;
+    }
+    for(int i=0;i<n;i++)
+    {
+        pthread_join(ptid[i], &status);
+    }
 }
 
 
 int main(int argc, char *argv[])
 {
+    vector<Transaction> TX;     //All transactions
     ifstream f_inp;     //input file
     f_inp.open(argv[1]);
-    map<string,int> sym_table;      //symbol table: variable name , value
     string line;
     int i=0, num_tx;
-    vector<Transaction> TX;     //All transactions
 
     while(f_inp) {      //while EOF
         if(i==0) {      //first line of file = num_tx
@@ -107,7 +100,7 @@ int main(int argc, char *argv[])
         i++;
     }
     f_inp.close();
-    begin_transactions(&TX, &sym_table);
+    begin_transactions(&TX);
 
     return 0;
 }
