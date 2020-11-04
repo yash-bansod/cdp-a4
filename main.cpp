@@ -6,16 +6,17 @@ using namespace std;
 
 map<string,int> sym_table;      //symbol table: variable name , value
 
-void* initiate_tid(void* args)
+struct args{
+    LockMgr *lock;
+    Transaction *tx;
+}args;
+
+void* initiate_tid(void* argu)
 {
     map<string,int> t_sym;
-    vector<string> db_vars;
-    for(auto itr=sym_table.begin();itr!=sym_table.end();++itr)
-    {
-        db_vars.push_back(itr->first);
-    }
-    LockMgr lock(db_vars);
-    Transaction *tx = (Transaction*)args;
+    struct args *arg = (struct args*)argu;
+    Transaction *tx = arg->tx;
+    LockMgr *lock=arg->lock;
     int tx_id=tx->get_txid();
     //cout<<ret<<endl;
     vector< pair<char, string> > ops=tx->get_ops();
@@ -25,12 +26,12 @@ void* initiate_tid(void* args)
         {
             case 'R':
             {
-                lock.acquireReadLock(tx_id, it->second);
+                lock->acquireReadLock(tx_id, it->second);
                 break;
             }
             case 'W':
             {
-                lock.acquireWriteLock(tx_id, it->second);
+                lock->acquireWriteLock(tx_id, it->second);
                 break;
             }
             case 'O':
@@ -81,12 +82,12 @@ void* initiate_tid(void* args)
                     auto found=sym_table.find(itr->first);
                     found->second=itr->second;
                 }
-                lock.releaseAllLocks(tx_id);
+                lock->releaseAllLocks(tx_id);
                 break;
             }
             case 'A':
             {
-                lock.releaseAllLocks(tx_id);
+                lock->releaseAllLocks(tx_id);
                 break;
             }
             default:
@@ -98,13 +99,22 @@ void* initiate_tid(void* args)
 
 void begin_transactions(vector<Transaction>* TX)
 {
+    struct args arg;
     int n=(*TX).size(); 
     pthread_t ptid[n];
     void *status;
     int i=0;
+    vector<string> db_vars;
+    for(auto itr=sym_table.begin();itr!=sym_table.end();++itr)
+    {
+        db_vars.push_back(itr->first);
+    }
+    LockMgr lck(db_vars);
+    arg.lock=&lck;
     for(auto it=(*TX).begin();it!=(*TX).end();++it)
     {
-        pthread_create(&ptid[i], NULL, &initiate_tid, (void*)&(*it));
+        arg.tx=&(*it);
+        pthread_create(&ptid[i], NULL, &initiate_tid, (void*)&arg);
         i++;
     }
     for(int i=0;i<n;i++)
