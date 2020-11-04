@@ -6,15 +6,11 @@ using namespace std;
 
 map<string,int> sym_table;      //symbol table: variable name , value
 
+LockMgr* LOCK;
+
 void* initiate_tid(void* args)
 {
     map<string,int> t_sym;
-    vector<string> db_vars;
-    for(auto itr=sym_table.begin();itr!=sym_table.end();++itr)
-    {
-        db_vars.push_back(itr->first);
-    }
-    LockMgr lock(db_vars);
     Transaction *tx = (Transaction*)args;
     int tx_id=tx->get_txid();
     //cout<<ret<<endl;
@@ -25,12 +21,12 @@ void* initiate_tid(void* args)
         {
             case 'R':
             {
-                lock.acquireReadLock(tx_id, it->second);
+                LOCK->acquireReadLock(tx_id, it->second);
                 break;
             }
             case 'W':
             {
-                lock.acquireWriteLock(tx_id, it->second);
+                LOCK->acquireWriteLock(tx_id, it->second);
                 break;
             }
             case 'O':
@@ -81,12 +77,12 @@ void* initiate_tid(void* args)
                     auto found=sym_table.find(itr->first);
                     found->second=itr->second;
                 }
-                lock.releaseAllLocks(tx_id);
+                LOCK->releaseAllLocks(tx_id);
                 break;
             }
             case 'A':
             {
-                lock.releaseAllLocks(tx_id);
+                LOCK->releaseAllLocks(tx_id);
                 break;
             }
             default:
@@ -98,6 +94,13 @@ void* initiate_tid(void* args)
 
 void begin_transactions(vector<Transaction>* TX)
 {
+    vector<string> db_vars;
+    for(auto itr=sym_table.begin();itr!=sym_table.end();++itr)
+    {
+        db_vars.push_back(itr->first);
+    }
+    LockMgr lck(db_vars);
+    LOCK=&lck;
     int n=(*TX).size(); 
     pthread_t ptid[n];
     void *status;
