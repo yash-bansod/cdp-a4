@@ -1,21 +1,9 @@
 W-lock [1,a]
-W-lock [2,b]
-W-lock [1,b]
-W-lock [3,a]
-W-lock [2,a]
-W-lock [3,b]
-unlock [1,a]
-W-lock [3,c]
-W-lock [4,c]unlock [3,a]
+W-lock [2,b]Wait_W-lock [3,a]
 
-unlock [2,a]
-unlock [3,b]unlock [1,b]W-lock [4,a]unlock [2,b]
+Wait_W-lock [1,b]
+W-lock [4,c]Wait_W-lock [2,a]
 
-
-
-W-lock [4,b]
-unlock [4,a]
-unlock [4,b]
-unlock [4,c]
-unlock [3,c]
-a -30	b 50	c 70	d 40	e 50	
+Wait_W-lock [4,a]
+Wait_W-lock [2,a]
+Wait_W-lock [3,a]

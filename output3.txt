@@ -1,14 +1,14 @@
-R-lock [3,c]R-lock [2,b]
-upgrade [3,c]
 R-lock [1,a]
-R-lock [4,d]
-
-unlock [4,d]
+R-lock [2,b]R-lock [4,d]
+upgrade [1,a]
 upgrade [2,b]
 R-lock [5,e]
-unlock [3,c]unlock [5,e]
-
-unlock [2,b]
-upgrade [1,a]
+R-lock [3,c]
 unlock [1,a]
+upgrade [3,c]
+
+unlock [3,c]unlock [2,b]
+
+unlock [5,e]
+unlock [4,d]
 a 15	b 30	c 5	d 25	e 30	
