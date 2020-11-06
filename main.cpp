@@ -162,7 +162,8 @@ int main(int argc, char *argv[])
 			}
 		}
 		else {      //Transaction descriptions
-			for(int j=0;j<num_tx;j++)
+            int j;
+			for(j=0;j<num_tx;j++)
 			{
 				if(!getline(f_inp, line))
 					break;
@@ -171,11 +172,11 @@ int main(int argc, char *argv[])
 				while(getline(f_inp, line)) {
 					istringstream ss(line);
 					string token, var;
-					int j=0;
+					int k=0;
 					char opcode;
 					while(ss >> token)
 					{
-						if(j==0)
+						if(k==0)
 						{
 							if(token!="R" && token!="W" && token!="C" && token!="A") {
 								opcode='O';
@@ -188,9 +189,9 @@ int main(int argc, char *argv[])
 								break;
 							}
 						}
-						else if(j==1)
+						else if(k==1)
 							var=token;
-						j++;
+						k++;
 					}
 					tx.add_op(opcode, var);
 					if(opcode=='C' || opcode=='A')
@@ -198,6 +199,8 @@ int main(int argc, char *argv[])
 				}
 				TX.push_back(tx);
 			}
+            if(j==num_tx)
+                break;
 		}
 		i++;
 	}
