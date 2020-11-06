@@ -1,0 +1,11 @@
+R-lock [1,u]
+R-lock [2,v]
+upgrade [2,v]
+unlock [2,v]
+R-lock [1,v]
+upgrade [1,u]
+unlock [1,u]
+unlock [1,v]
+
+Successfully executed all the transactions
+u 70	v 60	

@@ -1,20 +1,23 @@
 R-lock [1,a]
-R-lock [5,e]
 R-lock [3,c]
-R-lock [4,d]
-upgrade [4,d]
 upgrade [1,a]
-unlock [1,a]
-unlock [5,e]
+R-lock [4,d]
+Wait_R-lock [2,a]upgrade [4,d]
+R-lock [5,e]
 Wait_R-lock [3,d]
+
+unlock [1,a]
 R-lock [2,a]
 R-lock [2,b]
 upgrade [2,b]
-unlock [2,a]
-unlock [2,b]
 unlock [4,d]
-R-lock [3,d]
-upgrade [3,c]
+unlock [2,a]
+R-lock [3,d]unlock [2,b]
+
+unlock [5,e]upgrade [3,c]
+
 unlock [3,c]
 unlock [3,d]
+
+Successfully executed all the transactions
 a 15	b 35	c 5	d 15	e 30	

@@ -1,9 +1,13 @@
 W-lock [1,a]
 W-lock [2,b]Wait_W-lock [3,a]
 
-Wait_W-lock [1,b]
-W-lock [4,c]Wait_W-lock [2,a]
+W-lock [4,c]Wait_W-lock [1,b]
+Wait_W-lock [2,a]
 
+Wait_W-lock [3,a]
 Wait_W-lock [4,a]
 Wait_W-lock [2,a]
-Wait_W-lock [3,a]
+
+Caught signal 2
+Transactions involved in deadLock :
+1 2 3 4 
