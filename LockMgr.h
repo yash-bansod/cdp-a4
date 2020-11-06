@@ -40,6 +40,7 @@ public:
 
     // upgrade to write was handled in acquire write itself
     // void upgradeToWrite(int txId, string varName);
+    set<int> getCulprits();
 
     void testCompilation();
     void printAllVars();

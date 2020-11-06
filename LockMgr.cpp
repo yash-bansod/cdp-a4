@@ -111,6 +111,30 @@ void LockMgr::releaseAllLocks(int txId){
     return;
 }
 
+set<int> LockMgr::getCulprits(){
+    // for every db var release locks
+    set<int> culprits;
+
+    for(string varName : db_varNames){
+        mutex & mlk = db_map[varName].mux;
+        set<int> & wait_read = db_map[varName].wait_reader;
+        set<int> & wait_write = db_map[varName].wait_writer;
+
+        unique_lock<mutex> ul(mlk);
+        
+        for(int wrID : wait_read){
+            culprits.insert(wrID);
+        }
+        for(int wwID : wait_write){
+            culprits.insert(wwID);
+        }
+        
+        ul.unlock();
+    }
+
+    return culprits;
+}
+
 void LockMgr::releaseLock(int txId, string varName){
     // check if has a lock and release it accordingly
     mutex & mlk = db_map[varName].mux;
