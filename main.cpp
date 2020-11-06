@@ -188,10 +188,14 @@ int main(int argc, char *argv[])
     }
     f_inp.close();
     begin_transactions(&TX);
+
+    cout << endl << "Successfully executed all the transactions" << endl;
     for(auto it=sym_table.begin();it!=sym_table.end();++it)
     {
         cout<<it->first<<" "<<it->second<<"\t";
     }
+    cout << endl;
+    
     return 0;
 }
 
